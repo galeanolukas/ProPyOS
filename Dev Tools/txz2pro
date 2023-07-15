@@ -1,0 +1,42 @@
+#!/usr/bin/env python3
+import sys, tarfile
+import os, re
+import shutil
+import locale
+
+txz_path = sys.argv[1]
+txz = os.path.basename(txz_path)
+dir_txz = txz[0:len(txz) - 4] 
+
+icono = "/usr/share/pixmaps/pro-48.png"
+idioma = locale.getdefaultlocale()
+
+if "es_AR" in idioma:
+    leng = {"Msj_1":'dunstify -u normal -i %s "Preparando el paquete %s .."',
+            "Msj_2":'dunstify -u normal -i %s "Error! el archivo %s no es un .txz"',
+            "Msj_3":'dunstify -u normal -i %s "Convirtiendo el paquete %s a modulo .pro"',
+            "Msj_4":'dunstify -u normal -i %s "Exito!! el modulo %s fue creado.."'}
+else:
+    leng = {"Msj_1":'dunstify -u normal -i %s "Preparando el paquete %s .."',
+            "Msj_2":'dunstify -u normal -i %s "Error! el archivo %s no es un .txz"',
+            "Msj_3":'dunstify -u normal -i %s "Convirtiendo el paquete %s a modulo .pro"',
+            "Msj_4":'dunstify -u normal -i %s "Exito!! el modulo %s fue creado.."'}
+
+try:
+    re.findall(".txz", txz)[0]
+    os.mkdir(dir_txz)
+    os.system(leng.get("Msj_1") % (icono, txz))
+    shutil.move(txz, dir_txz)
+    try:
+        os.system(leng.get("Msj_3") % (icono, txz))
+        os.system("mktxz2pro %s" % dir_txz)
+        os.system(leng.get("Msj_4") % (icono, dir_txz + ".pro"))
+    except OSError:
+        print ("No se pudo crear el modulo %s.." % dir_txz + ".pro")
+except:
+    os.system(leng.get("Msj_2") % (icono, txz))
+    print ("ERROR! No es un paquete Slackware..(.txz)")
+    
+  
+
+

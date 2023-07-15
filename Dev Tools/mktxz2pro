@@ -1,0 +1,46 @@
+#!/usr/bin/python3
+import os, shutil
+import subprocess as commands
+import sys
+descomp = "tar -xf %s -C %s"
+nombre = "modulo_"
+ruta = sys.argv[1]
+
+def Build():
+    dire = nombre + ruta
+    ls = os.listdir(ruta)
+    archivo = open("lista_%s.txt" % dire, "w")
+    try:
+        commands.getoutput("mkdir " + dire)
+    except OSError:
+        pass
+    for mod in range(len(ls)):
+        try:
+            txz = ruta + "/" + ls[mod]
+            commands.getoutput(descomp % (txz, dire))
+            doinst(dire)
+            archivo.write(ls[mod] + "\n")
+        except OSError:
+            print ("Modulo corrupto!!..")
+            pass
+        
+    archivo.close()
+    os.makedirs("%s/opt/info_modulo/" % dire)
+    shutil.copy("lista_%s.txt" % dire, "%s/opt/info_modulo/%s.txt" % (dire, ruta))
+    commands.getoutput("dir2pro %s %s" % (dire, ruta + ".pro"))
+    print ("Se Creo el modulo %s..." % dire)
+    print ("Se creo lista %s de los modulos" % dire)
+    commands.getoutput("rm -R %s" % dire)
+    
+def doinst(nombre):
+    commands.getoutput("mv %s/install/doinst.sh %s" % (nombre, nombre))
+    try:
+        commands.getoutput("chmod 777 %s/doinst.sh" % nombre)
+        commands.getoutput("cd %s && ./doinst.sh" % nombre)
+        commands.getoutput("rm %s/doinst.sh" % nombre)
+        commands.getoutput("rm -R %s/install" % nombre)
+        commands.getoutput("rm -R %s/usr/doc" % nombre)
+    except OSError:
+        print ("no existe doinst.sh....")
+    
+Build()

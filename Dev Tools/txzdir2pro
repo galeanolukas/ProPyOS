@@ -1,0 +1,5 @@
+#!/usr/bin/env python3
+import sys, os
+direc = sys.argv[1]
+modulo = os.path.basename(direc)
+os.system('mktxz2pro %s' % modulo) 

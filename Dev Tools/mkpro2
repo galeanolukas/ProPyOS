@@ -1,0 +1,34 @@
+#!/bin/bash
+# conversor de modulos txz a .pro
+# Creado x lukas www.propyos.com
+TXZ=$1
+archivo=$TXZ-dir
+
+ejec_script(){
+	mv $archivo/install/doinst.sh $archivo
+	cd $archivo
+	if chmod 777 doinst.sh; then
+		./doinst.sh
+		rm doinst.sh
+	else
+		echo "No se encontro ejecutable doinst.sh" 
+		#rm -r install
+	fi
+	rm -r install
+}
+
+descom_txz(){
+	mkdir $archivo
+	tar -xvf $TXZ -C $archivo
+}
+
+comp(){
+	cd -
+	./dir2pro $archivo $TXZ.pro 
+
+}
+
+descom_txz
+ejec_script
+comp
+
